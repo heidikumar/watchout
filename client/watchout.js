@@ -4,8 +4,8 @@
 var gameBoard = {
   boardWidth: 900,
   boardHeight: 900,
-  enemyWidth: 15,
-  enemyHeight: 15,
+  enemyWidth: 25,
+  enemyHeight: 25,
   enemyNum: 70
 
 };
@@ -17,8 +17,6 @@ var svg = d3.select('.container').append("svg:svg")
 .append("g");
 
 
-var qq = drawEnemies(20);
-console.log(qq)
 
 //Draw enemies
 var enemy = svg.selectAll("image")
@@ -43,6 +41,16 @@ function drawEnemies(n){
   return output;
 
 }
+
+function moveEnemies(){
+  svg.selectAll("image")
+    .transition()
+    .attr("x", function(d){ return d.x + Math.random()*300 + "px";})
+    .attr("y", function(d){ return d.y + Math.random()*300 + "px"; })
+
+}
+
+setInterval(moveEnemies , 1000);
 
 //Enemies move to a new *RANDOM* location every second
 
