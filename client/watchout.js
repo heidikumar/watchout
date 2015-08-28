@@ -7,7 +7,6 @@ var gameBoard = {
   enemyWidth: 25,
   enemyHeight: 25,
   enemyNum: 70
-
 };
 
 //Draw gameboard
@@ -45,10 +44,31 @@ function drawEnemies(n){
 
 //Enemies move to a random location every 1 second
 function moveEnemies(){
+  //What's an enemy's position?
+  var enemyPositionX = [];
+  var enemyPositionY = [];
   svg.selectAll(".enemy")
     .transition()
-    .attr("x", function(d){ return d.x + Math.random()*300;})
-    .attr("y", function(d){ return d.y + Math.random()*300;})
+    .attr("x", function(d){ var xPosition = d.x + Math.random()*300; enemyPositionX.push(xPosition); return xPosition;})
+    .attr("y", function(d){ var yPosition = d.y + Math.random()*300; enemyPositionY.push(yPosition); return yPosition;})
+
+    //what's the player's position?
+  var playerPos = d3.select(".player")
+    var playerX = playerPos.attr("x");//soemthifdlafjklds
+    var playerY = playerPos.attr("y");//llalala
+
+  //Calculate distance from player  
+  for (var i = 0; i < enemyPositionX.length; i++){
+    var distance = Math.sqrt(Math.pow((enemyPositionX[i] - playerX),2) + Math.pow((enemyPositionY[i] - playerY),2));
+    var radius = 12.5;
+
+    if(distance<2*radius){
+      //then we have a collision
+      console.log("BOOM!");
+
+    }   
+  }
+ 
 
 }
 
@@ -66,6 +86,7 @@ var drag = d3.behavior.drag()
 function dragmove(d) {
   var x = d3.event.x;
   var y = d3.event.y;
+ // console.log(x,y)
  
   d3.select(this).attr("x", x);
   d3.select(this).attr("y", y);
