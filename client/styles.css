@@ -6,3 +6,6 @@ Feel free to use it if you like. */
 .enemy{
   position:absolute;
 }
+.player{
+  position: absolute;
+}
