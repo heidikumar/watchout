@@ -6,7 +6,7 @@ var gameBoard = {
   boardHeight: 900,
   enemyWidth: 25,
   enemyHeight: 25,
-  enemyNum: 70
+  enemyNum: 150
 };
 
 //Draw gameboard
@@ -65,10 +65,19 @@ function moveEnemies(){
     if(distance<2*radius){
       //then we have a collision
       console.log("BOOM!");
-
+      UpdateCollsion();
+      UpdateHighScore();
+      UpdateScore();
+      //Subtract points
     }   
   }
- 
+
+  //What condition to add points?
+    //Constantly-escalating points
+
+  //Reset points to zero on collision
+
+  //High score finder
 
 }
 
@@ -110,4 +119,26 @@ Player.on("click", function() {
   if (d3.event.defaultPrevented) return; // click suppressed
   console.log("click!");
 });
+
+function UpdateScore(){
+  d3.select(".current span").text(0)
+}
+
+function UpdateHighScore(){
+  var currentScore = d3.select(".current span").text();
+  if (currentScore > d3.select(".high span").text()){
+    d3.select(".high span").text(currentScore);
+  }
+}
+
+function UpdateCollsion(){
+  d3.select(".collisions span").text((Number(d3.select(".collisions span").text())+1));
+}
+
+UpdateScore(50);
+UpdateHighScore(10);
+
+setInterval(function(){d3.select(".current span").text((Number(d3.select(".current span").text())+1))}, 50)
+
+
 
