@@ -9,6 +9,7 @@ var gameBoard = {
   enemyNum: 50,
   transitionDuration: 700,
   transitionDelay: 35,
+  boardPadding: 30,
   asteroidLength: function(){ return this.boardWidth *0.25}
 };
 
@@ -19,6 +20,38 @@ var svg = d3.select('.container').append("svg:svg")
 .append("g");
 
 
+//Handle dragging AND gameboard boundaries on drag
+var drag = d3.behavior.drag()
+    .on("drag", dragmove);
+
+function dragmove(d) {
+  var x = d3.event.x;
+  var y = d3.event.y;
+
+  console.log(x,y)
+
+ // console.log(x,y)
+ var gameBoardMaxX = gameBoard.boardHeight;
+ var gameBoardMaxY = gameBoard.boardWidth;
+ var gameBoardMinX = 0;
+ var gameBoardMinY = 0;
+
+ if (x > gameBoardMaxX - (gameBoard.boardPadding - 5)){
+  d3.select(this).attr("x", gameBoardMaxX - gameBoard.boardPadding);
+ } else if (x < gameBoardMinX) {
+  d3.select(this).attr("x", gameBoardMinX);
+ } else {
+  d3.select(this).attr("x", x);
+ }
+
+ if (y > gameBoardMaxY - (gameBoard.boardPadding - 5)){
+  d3.select(this).attr("y", gameBoardMaxY - gameBoard.boardPadding);
+ } else if (y < gameBoardMinY){
+  d3.select(this).attr("y", gameBoardMinY);
+ } else {
+  d3.select(this).attr("y", y);
+ }
+}
 
 //Draw enemies
 var enemy = svg.selectAll("image")
@@ -45,6 +78,7 @@ function drawEnemies(n){
 
 }
 function detectCollision(enemyx, enemyy, playerX, playerY){
+
     var distance = Math.sqrt(Math.pow((enemyx - playerX),2) + Math.pow((enemyy - playerY),2));
     var radius = 12.5;
 
@@ -56,7 +90,31 @@ function detectCollision(enemyx, enemyy, playerX, playerY){
       UpdateScore();
       //Subtract points
     }   
+
 }
+
+var customTween = function(endData) {
+      var endPos, enemy, startPos;
+      enemy = d3.select(this);
+      startPos = {
+        x: parseFloat(enemy.attr('x')),
+        y: parseFloat(enemy.attr('y'))
+      };
+      endPos = {
+        x: endData.x,
+        y: endData.y
+      };
+      return function(t) {
+        var enemyNextPos;
+        checkCollision(enemy, onCollision);
+        enemyNextPos = {
+          x: startPos.x + (endPos.x - startPos.x) * t,
+          y: startPos.y + (endPos.y - startPos.y) * t
+        };
+        return enemy.attr('x', enemyNextPos.x).attr('y', enemyNextPos.y);
+      };
+    };
+
 //Enemies move to a random location every 1 second
 function moveEnemies(){
   //What's an enemy's position?
@@ -70,6 +128,7 @@ function moveEnemies(){
     .attr("y", function(d){ var yPosition = d.y + Math.random()*gameBoard.asteroidLength(); enemyPositionY.push(yPosition); return yPosition;})
     .tween("ourtween", function(){
       return function(t){
+        console.log()
         var playerPos = d3.select(".player")
         var playerX = playerPos.attr("x");//soemthifdlafjklds
         var playerY = playerPos.attr("y");//llalala
@@ -77,8 +136,9 @@ function moveEnemies(){
         var enemyx = d3.select(this).attr("x");
         var enemyy = d3.select(this).attr("y")
 
-         var myThrottle = _.throttle(function(){ detectCollision(enemyx,enemyy, playerX, playerY) }, 700);
-         myThrottle();
+        // var myThrottle = _.throttle(function(){ detectCollision(enemyx,enemyy, playerX, playerY) }, 700);
+        // myThrottle();
+        detectCollision();  
       
           }
     })
@@ -111,7 +171,8 @@ function moveEnemies(){
 
 }
 
-setInterval(moveEnemies, 1000);
+//Move enemies, detect static collisions
+var drawRefInterval = setInterval(moveEnemies, 1000);
 
 /* Dragging implementation references:
 
@@ -119,18 +180,7 @@ setInterval(moveEnemies, 1000);
 2) http://stackoverflow.com/questions/19911514/how-can-i-click-to-add-or-drag-in-d3
 */
 
-var drag = d3.behavior.drag()
-    .on("drag", dragmove);
 
-function dragmove(d) {
-  var x = d3.event.x;
-  var y = d3.event.y;
- // console.log(x,y)
- 
-  d3.select(this).attr("x", x);
-  d3.select(this).attr("y", y);
-//  d3.select(this).attr("transform", "translate(" + x + "," + y + ")");
-}
 
 //Make current player
 var Player = svg.selectAll("image").select("g")
@@ -140,8 +190,8 @@ var Player = svg.selectAll("image").select("g")
 .attr("xlink:href", "./enterprise.png")
 .attr("height", gameBoard.enemyHeight + "px")
 .attr("width", gameBoard.enemyWidth + "px")
-.attr("x", "30")
-.attr("y", "40")
+.attr("x", Math.random()*gameBoard.boardWidth)
+.attr("y", Math.random()*gameBoard.boardHeight)
 .attr("class", "player")
 .call(drag)
 
@@ -165,19 +215,18 @@ function UpdateCollsion(){
   d3.select(".collisions span").text((Number(d3.select(".collisions span").text())+1));
 }
 
-UpdateScore(50);
-UpdateHighScore(10);
 
+//Start updating the score
 setInterval(function(){d3.select(".current span").text((Number(d3.select(".current span").text())+1))}, 50);
 
 //Wish list:
 
 //1) Collision during transition
-//2) Board "boundaries"
+//2) Board "boundaries" [x]
 //3) Extra: Rotate the spaceship w/ mouse drag
-//4) Random position for spaceship start
+//4) Random position for spaceship start [x]
 //5) Levels [change gameBoard parameters]
 //6) Player-specified enemy count [reset button]
-
-
+//7) Visual cue on player instantiation
+//8) Pause button: setInterval(moveEnemies, 1000); vs window.clearInterval(drawRefInterval)
 
