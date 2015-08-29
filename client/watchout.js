@@ -6,7 +6,7 @@ var gameBoard = {
   boardHeight: 900,
   enemyWidth: 25,
   enemyHeight: 25,
-  enemyNum: 250,
+  enemyNum: 25,
   transitionDuration: 700,
   transitionDelay: 45,
   asteroidLength: function(){ return this.boardWidth *0.25}

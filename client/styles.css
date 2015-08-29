@@ -9,3 +9,11 @@ Feel free to use it if you like. */
 .player{
   position: absolute;
 }
+.container{
+  background-color: #D1E0E0
+}
+.scoreboard{
+  background-color: #99ADC2;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 20px;
+}
