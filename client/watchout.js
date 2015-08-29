@@ -125,8 +125,8 @@ function UpdateScore(){
 }
 
 function UpdateHighScore(){
-  var currentScore = d3.select(".current span").text();
-  if (currentScore > d3.select(".high span").text()){
+  var currentScore = Number(d3.select(".current span").text());
+  if (currentScore > Number(d3.select(".high span").text())){
     d3.select(".high span").text(currentScore);
   }
 }
