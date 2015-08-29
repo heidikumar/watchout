@@ -6,9 +6,9 @@ var gameBoard = {
   boardHeight: 900,
   enemyWidth: 25,
   enemyHeight: 25,
-  enemyNum: 25,
+  enemyNum: 50,
   transitionDuration: 700,
-  transitionDelay: 45,
+  transitionDelay: 35,
   asteroidLength: function(){ return this.boardWidth *0.25}
 };
 
@@ -44,7 +44,19 @@ function drawEnemies(n){
   return output;
 
 }
+function detectCollision(enemyx, enemyy, playerX, playerY){
+    var distance = Math.sqrt(Math.pow((enemyx - playerX),2) + Math.pow((enemyy - playerY),2));
+    var radius = 12.5;
 
+    if(distance<2*radius){
+      //then we have a collision
+      console.log("Booms");
+      UpdateCollsion();
+      UpdateHighScore();
+      UpdateScore();
+      //Subtract points
+    }   
+}
 //Enemies move to a random location every 1 second
 function moveEnemies(){
   //What's an enemy's position?
@@ -56,9 +68,22 @@ function moveEnemies(){
     .delay(gameBoard.transitionDelay)
     .attr("x", function(d){ var xPosition = d.x + Math.random()*gameBoard.asteroidLength(); enemyPositionX.push(xPosition); return xPosition;})
     .attr("y", function(d){ var yPosition = d.y + Math.random()*gameBoard.asteroidLength(); enemyPositionY.push(yPosition); return yPosition;})
+    .tween("ourtween", function(){
+      return function(t){
+        var playerPos = d3.select(".player")
+        var playerX = playerPos.attr("x");//soemthifdlafjklds
+        var playerY = playerPos.attr("y");//llalala
+        //console.log("new enemy pos:" + d3.select(this).attr("x") + "," + d3.select(this).attr("y"));
+        var enemyx = d3.select(this).attr("x");
+        var enemyy = d3.select(this).attr("y")
 
+         var myThrottle = _.throttle(function(){ detectCollision(enemyx,enemyy, playerX, playerY) }, 700);
+         myThrottle();
+      
+          }
+    })
     //what's the player's position?
-  var playerPos = d3.select(".player")
+    var playerPos = d3.select(".player")
     var playerX = playerPos.attr("x");//soemthifdlafjklds
     var playerY = playerPos.attr("y");//llalala
 
