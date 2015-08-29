@@ -76,7 +76,7 @@ var enemy = svg.selectAll("image")
 .data(drawEnemies(gameBoard.enemyNum))
 .enter()
 .append("image")
-.attr("xlink:href", "./asteroid.png")
+.attr("xlink:href", "./shuriken.png")
 .attr("class", "enemy")
 .attr("height", gameBoard.enemyHeight + "px")
 .attr("width", gameBoard.enemyWidth + "px")
@@ -86,7 +86,6 @@ var enemy = svg.selectAll("image")
 
 function drawEnemies(n){
   var output = [];
-
   for (var i = 0; i < n; i++){
     output.push({id: i, x: Math.random()*gameBoard.boardWidth, y: Math.random()*gameBoard.boardHeight})
   }
@@ -145,7 +144,7 @@ function moveEnemies(){
     .tween("ourtween", function(){
       var fired = false; //stored in closure so it can only fire once 
       return function(t){
-
+        d3.select(this).interpolateString("rotate(-60, 150, 130)", "rotate(60, 150, 130)")   //WORKING ON A WAY TO ROTATE IMAGES WITHIN THE TWEEN
         var playerPos = d3.select(".player");
         var playerX = playerPos.attr("x");
         var playerY = playerPos.attr("y");
@@ -155,10 +154,9 @@ function moveEnemies(){
 
         // var myThrottle = _.throttle(function(){ detectCollision(enemyx,enemyy, playerX, playerY) }, 700);
         // myThrottle();
-        // detectCollision(enemyx, enemyy, playerX, playerY);  
+        // detectCollision();  
 
-          //try putting whole collision back in function to use hash
-
+          //try putting whole collision back in function to use has
           var distance = Math.sqrt(Math.pow((enemyx - playerX),2) + Math.pow((enemyy - playerY),2));
           var radius = 12.5;
 
@@ -171,10 +169,30 @@ function moveEnemies(){
             UpdateScore();
             //Subtract points
           }   
-        
-      
         }
     })
+
+
+    //   .attrTween("transform", function(interpolate) {
+    //   return d3[interpolate](
+    //     "rotate(180)translate(0,-100)",
+    //     "rotate(360)translate(0,-100)"
+    //   );
+    // })
+
+    // function turnNeedle()
+    // {
+    //     needle
+    //       .transition()
+    //       .duration(2000)
+    //       .attrTween("transform", tween);
+    //     function tween(d, i, a) {
+    //       return d3.interpolateString("rotate(-60, 150, 130)", "rotate(60, 150, 130)");
+    //     }
+    // }
+
+
+
     //what's the player's position?
     var playerPos = d3.select(".player")
     var playerX = playerPos.attr("x");//soemthifdlafjklds
@@ -234,6 +252,10 @@ function UpdateCollsion(){
 
 
 //Wish list:
+
+//BASIC REQUIREMENTS ASKS FOR ENEMIES TO ROTATE. 
+  //Need to add to draw enemies tween.
+
 
 //1) Collision during transition
 //2) Board "boundaries" [x]
