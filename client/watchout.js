@@ -1,4 +1,3 @@
-// start slingin' some d3 here.
 
 //Initialize gameboard
 var gameBoard = {
@@ -6,7 +5,7 @@ var gameBoard = {
   boardHeight: 900,
   enemyWidth: 25,
   enemyHeight: 25,
-  enemyNum: 50,
+  enemyNum: 25,
   transitionDuration: 700,
   transitionDelay: 35,
   boardPadding: 30,
@@ -28,7 +27,7 @@ function dragmove(d) {
   var x = d3.event.x;
   var y = d3.event.y;
 
-  console.log(x,y)
+  // console.log(x,y)
 
  // console.log(x,y)
  var gameBoardMaxX = gameBoard.boardHeight;
@@ -53,6 +52,25 @@ function dragmove(d) {
  }
 }
 
+//Make current player
+var Player = svg.selectAll("image").select("g")
+.data([1])
+.enter()
+.append("image")
+.attr("xlink:href", "./enterprise.png")
+.attr("height", gameBoard.enemyHeight + "px")
+.attr("width", gameBoard.enemyWidth + "px")
+
+.attr("x", Math.random()*gameBoard.boardWidth)
+.attr("y", Math.random()*gameBoard.boardHeight)
+.attr("class", "player")
+.call(drag)
+
+Player.on("click", function() {
+  if (d3.event.defaultPrevented) return; // click suppressed
+  console.log("click!");
+});
+
 //Draw enemies
 var enemy = svg.selectAll("image")
 .data(drawEnemies(gameBoard.enemyNum))
@@ -72,11 +90,9 @@ function drawEnemies(n){
   for (var i = 0; i < n; i++){
     output.push({id: i, x: Math.random()*gameBoard.boardWidth, y: Math.random()*gameBoard.boardHeight})
   }
-
-
   return output;
-
 }
+
 function detectCollision(enemyx, enemyy, playerX, playerY){
 
     var distance = Math.sqrt(Math.pow((enemyx - playerX),2) + Math.pow((enemyy - playerY),2));
@@ -127,20 +143,37 @@ function moveEnemies(){
     .attr("x", function(d){ var xPosition = d.x + Math.random()*gameBoard.asteroidLength(); enemyPositionX.push(xPosition); return xPosition;})
     .attr("y", function(d){ var yPosition = d.y + Math.random()*gameBoard.asteroidLength(); enemyPositionY.push(yPosition); return yPosition;})
     .tween("ourtween", function(){
+      var fired = false; //stored in closure so it can only fire once 
       return function(t){
-        console.log()
-        var playerPos = d3.select(".player")
-        var playerX = playerPos.attr("x");//soemthifdlafjklds
-        var playerY = playerPos.attr("y");//llalala
+
+        var playerPos = d3.select(".player");
+        var playerX = playerPos.attr("x");
+        var playerY = playerPos.attr("y");
         //console.log("new enemy pos:" + d3.select(this).attr("x") + "," + d3.select(this).attr("y"));
         var enemyx = d3.select(this).attr("x");
         var enemyy = d3.select(this).attr("y")
 
         // var myThrottle = _.throttle(function(){ detectCollision(enemyx,enemyy, playerX, playerY) }, 700);
         // myThrottle();
-        detectCollision();  
+        // detectCollision(enemyx, enemyy, playerX, playerY);  
+
+          //try putting whole collision back in function to use hash
+
+          var distance = Math.sqrt(Math.pow((enemyx - playerX),2) + Math.pow((enemyy - playerY),2));
+          var radius = 12.5;
+
+          if(distance<2*radius && !fired){
+            //then we have a collision
+            fired = true;
+            console.log("Booms");
+            UpdateCollsion();
+            UpdateHighScore();
+            UpdateScore();
+            //Subtract points
+          }   
+        
       
-          }
+        }
     })
     //what's the player's position?
     var playerPos = d3.select(".player")
@@ -180,25 +213,8 @@ var drawRefInterval = setInterval(moveEnemies, 1000);
 2) http://stackoverflow.com/questions/19911514/how-can-i-click-to-add-or-drag-in-d3
 */
 
-
-
-//Make current player
-var Player = svg.selectAll("image").select("g")
-.data([1])
-.enter()
-.append("image")
-.attr("xlink:href", "./enterprise.png")
-.attr("height", gameBoard.enemyHeight + "px")
-.attr("width", gameBoard.enemyWidth + "px")
-.attr("x", Math.random()*gameBoard.boardWidth)
-.attr("y", Math.random()*gameBoard.boardHeight)
-.attr("class", "player")
-.call(drag)
-
-Player.on("click", function() {
-  if (d3.event.defaultPrevented) return; // click suppressed
-  console.log("click!");
-});
+//Start updating the score
+setInterval(function(){d3.select(".current span").text((Number(d3.select(".current span").text())+1))}, 50);
 
 function UpdateScore(){
   d3.select(".current span").text(0)
@@ -216,8 +232,6 @@ function UpdateCollsion(){
 }
 
 
-//Start updating the score
-setInterval(function(){d3.select(".current span").text((Number(d3.select(".current span").text())+1))}, 50);
 
 //Wish list:
 
@@ -228,5 +242,12 @@ setInterval(function(){d3.select(".current span").text((Number(d3.select(".curre
 //5) Levels [change gameBoard parameters]
 //6) Player-specified enemy count [reset button]
 //7) Visual cue on player instantiation
-//8) Pause button: setInterval(moveEnemies, 1000); vs window.clearInterval(drawRefInterval)
+//8) Pause button: setInterval(moveEnemies, 1000); vs window.clearInterval()
+/* 
+  .attr("x", 0)
+  .attr("y", 0)
+  .transition()
+  .duration(1000)
+
+*/
 
