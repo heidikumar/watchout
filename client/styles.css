@@ -2,9 +2,15 @@
 
 /* Note: an asteroid image is included in this repo.
 Feel free to use it if you like. */
-
+body{
+  position: relative;
+}
 .enemy{
-  position:absolute;
+  position:fixed;
+  transform-origin: 50% 50%;
+  -webkit-animation: rotation_right 2s infinite linear
+
+
 }
 .player{
   position: absolute;
@@ -16,4 +22,10 @@ Feel free to use it if you like. */
   background-color: #99ADC2;
   font-family: 'Open Sans', sans-serif;
   font-size: 20px;
+}
+
+
+@-webkit-keyframes rotation_right {
+    from {-webkit-transform: rotate(0deg);}
+    to   {-webkit-transform: rotate(359deg);}
 }
