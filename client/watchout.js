@@ -6,7 +6,9 @@ var gameBoard = {
   boardHeight: 900,
   enemyWidth: 25,
   enemyHeight: 25,
-  enemyNum: 150
+  enemyNum: 250,
+  transitionDuration: 700,
+  transitionDelay: 45
 };
 
 //Draw gameboard
@@ -49,6 +51,8 @@ function moveEnemies(){
   var enemyPositionY = [];
   svg.selectAll(".enemy")
     .transition()
+    .duration(gameBoard.transitionDuration)
+    .delay(gameBoard.transitionDelay)
     .attr("x", function(d){ var xPosition = d.x + Math.random()*300; enemyPositionX.push(xPosition); return xPosition;})
     .attr("y", function(d){ var yPosition = d.y + Math.random()*300; enemyPositionY.push(yPosition); return yPosition;})
 
